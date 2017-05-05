@@ -24,7 +24,7 @@
 
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery-1.5.2.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery-layout.js"></script>
+<script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery-layout-1.3.0.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.formtips.1.2.2.packed.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.tipsy.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.elastic.js"></script>
@@ -44,7 +44,7 @@
 <div class="ui-layout-north" id="header">
 <div id="sid-logo"><a href="<?php echo site_url()?>first" target="_blank"><img src="<?php echo LogoDesa($desa['logo']);?>" alt=""/></a></div>
 <div id="sid-judul">SID Sistem Informasi Desa</div>
-<div id="sid-info"><?php echo ucwords(config_item('sebutan_kabupaten_singkat'))?> <?php echo unpenetration($desa['nama_kabupaten'])?>, Kec. <?php echo unpenetration($desa['nama_kecamatan'])?>, Desa <?php echo unpenetration($desa['nama_desa'])?></div>
+<div id="sid-info"><?php echo ucwords(config_item('sebutan_desa')." ".$desa['nama_desa'].", ".config_item('sebutan_kecamatan')." ".unpenetration($desa['nama_kecamatan']).", ".config_item('sebutan_kabupaten')." ".unpenetration($desa['nama_kabupaten']))?></div>
 <div id="userbox" class="wrapper-dropdown-3" tabindex="1">
         <div class="avatar">
 		<?php if($foto){?>

@@ -25,12 +25,12 @@
 
 	function search_sql(){
 		if(isset($_SESSION['cari'])){
-		$cari = $_SESSION['cari'];
-			$kw = penetration($this->db->escape_like_str($cari));
+			$cari = $_SESSION['cari'];
+			$kw = $this->db->escape_like_str($cari);
 			$kw = '%' .$kw. '%';
 			$search_sql= " AND (u.nama LIKE '$kw' OR u.nik LIKE '$kw')";
 			return $search_sql;
-			}
+		}
 	}
 
 	function sex_sql(){
@@ -252,7 +252,7 @@
 
 		if ($log==1) {
 			$select_sql = "SELECT u.id,u.nik,u.tanggallahir,u.tempatlahir,u.status,u.status_dasar,u.id_kk,u.nama,u.nama_ayah,u.nama_ibu,a.dusun,a.rw,a.rt,d.alamat,d.no_kk AS no_kk,log.catatan as catatan,
-				(SELECT DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(`tanggallahir`)), '%Y')+0 FROM tweb_penduduk WHERE id = u.id) AS umur,x.nama AS sex,sd.nama AS pendidikan_sedang,n.nama AS pendidikan,p.nama AS pekerjaan,k.nama AS kawin,g.nama AS agama,m.nama AS gol_darah,hub.nama AS hubungan,log.tgl_peristiwa
+				(SELECT DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(`tanggallahir`)), '%Y')+0 FROM tweb_penduduk WHERE id = u.id) AS umur,x.nama AS sex,sd.nama AS pendidikan_sedang,n.nama AS pendidikan,p.nama AS pekerjaan,k.nama AS kawin,g.nama AS agama,m.nama AS gol_darah,hub.nama AS hubungan,log.tanggal,log.tgl_peristiwa,log.id_detail
 				";
 		} else {
 			// data log tidak di-select, supaya di tabel Penduduk tidak ada duplikat
@@ -367,22 +367,33 @@
 		$sql .= $this->dusun_sql();
 		$sql .= $this->rw_sql();
 		$sql .= $this->rt_sql();
-		$sql .= $this->agama_sql();
-		$sql .= $this->cacat_sql();
+
+		$kolom_kode = array(
+			array('cacat','cacat_id'),
+			array('cara_kb_id','cara_kb_id'),
+			array('menahun','sakit_menahun_id'),
+			array('status','status_kawin'),
+			array('pendidikan_kk_id','pendidikan_kk_id'),
+			array('pendidikan_sedang_id','pendidikan_sedang_id'),
+			array('status_penduduk','status'),
+			array('pekerjaan_id','pekerjaan_id'),
+			array('agama','agama_id'),
+			array('warganegara','warganegara_id'),
+			array('golongan_darah','golongan_darah_id')
+		);
+		foreach ($kolom_kode as $kolom){
+			$sql .= $this->get_sql_kolom_kode($kolom[0],$kolom[1]);
+		}
+
 		$sql .= $this->cacatx_sql();
-		$sql .= $this->menahun_sql();
+		$sql .= $this->akta_kelahiran_sql();
 		$sql .= $this->menahunx_sql();
-		$sql .= $this->warganegara_sql();
-		$sql .= $this->golongan_darah_sql();
 		$sql .= $this->umur_min_sql();
 		$sql .= $this->umur_max_sql();
-		$sql .= $this->pekerjaan_sql();
-		$sql .= $this->statuskawin_sql();
-		$sql .= $this->pendidikan_sedang_sql();
-		$sql .= $this->pendidikan_kk_sql();
 		$sql .= $this->umur_sql();
-		$sql .= $this->status_penduduk_sql();
 		$sql .= $this->hamil_sql();
+
+
 
 		$query = $this->db->query($sql);
 		return $query->result_array();
@@ -429,7 +440,7 @@
 			if ($tipe_file != "image/jpeg" AND $tipe_file != "image/jpg" AND $tipe_file != "image/png"){
 				unset($data['foto']);
 			} else {
-				UploadFoto($nama_file,$old_foto);
+				UploadFoto($nama_file,$old_foto,$tipe_file);
 				$data['foto'] = $nama_file;
 			}
 		}else{
@@ -471,9 +482,11 @@
 		$blnskrg = (date("m"));
 		$thnskrg = (date("Y"));
 		if($_POST['status']=='3'){
+			// Pendatang
 			$log['id_detail']="8";
-			}else{
+		}else{
 			if(($blnlahir==$blnskrg)and($thnlahir==$thnskrg)){
+				// Lahir
 				$log['id_detail']='1';
 			}else{
 				$log['id_detail']='5';
@@ -528,7 +541,7 @@
 			if ($tipe_file != "image/jpeg" AND $tipe_file != "image/pjpeg" AND $tipe_file != "image/png"){
 				unset($data['foto']);
 			} else {
-				UploadFoto($nama_file,$old_foto);
+				UploadFoto($nama_file,$old_foto,$tipe_file);
 				$data['foto'] = $nama_file;
 			}
 		}else{
@@ -669,7 +682,7 @@
 		(
 			SELECT DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(`tanggallahir`)), '%Y')+0  FROM tweb_penduduk WHERE id = u.id
 		)
-		 AS umur,x.nama AS sex,w.nama AS warganegara,n.nama AS pendidikan,p.nama AS pekerjaan,k.nama AS kawin,g.nama AS agama, c.nama as cacat, kb.nama as cara_kb
+		 AS umur,x.nama AS sex,w.nama AS warganegara,n.nama AS pendidikan,p.nama AS pekerjaan,k.nama AS kawin,g.nama AS agama, c.nama as cacat, kb.nama as cara_kb, sd.nama as status_dasar
 		 FROM tweb_penduduk u
 			LEFT JOIN tweb_keluarga d ON u.id_kk = d.id
 			LEFT JOIN tweb_wil_clusterdesa a ON d.id_cluster = a.id
@@ -684,6 +697,7 @@
 			LEFT JOIN tweb_penduduk_agama g ON u.agama_id = g.id
 			LEFT JOIN tweb_cacat c ON u.cacat_id = c.id
 			LEFT JOIN tweb_cara_kb kb ON u.cara_kb_id = kb.id
+			LEFT JOIN tweb_status_dasar sd ON u.status_dasar = sd.id
 			WHERE u.id=?";
 		$query = $this->db->query($sql,$id);
 		$data  = $query->row_array();
