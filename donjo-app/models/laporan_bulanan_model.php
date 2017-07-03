@@ -122,36 +122,6 @@
 		return $bulan;
 		}
 
-
-	function paging($lap=0,$p=1,$o=0){
-
-		switch($lap){
-			case 0: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 1: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pekerjaan u WHERE 1 "; break;
-			case 2: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 3: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 4: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 5: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 6: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 7: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			case 8: $sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 "; break;
-			default:$sql      = "SELECT COUNT(id) AS id FROM tweb_penduduk_pendidikan u WHERE 1 ";
-		}
-
-		//$sql     .= $this->search_sql();
-		$query    = $this->db->query($sql);
-		$row      = $query->row_array();
-		$jml_data = $row['id'];
-
-		$this->load->library('paging');
-		$cfg['page']     = $p;
-		$cfg['per_page'] = $_SESSION['per_page'];
-		$cfg['num_rows'] = $jml_data;
-		$this->paging->init($cfg);
-
-		return $this->paging;
-	}
-
 	function list_data(){
 
 		$sql="select c.id as id_cluster,c.rt,c.rw,c.dusun as dusunnya,
@@ -163,7 +133,13 @@
 (select count(id) from tweb_penduduk where (DATE_FORMAT( FROM_DAYS( TO_DAYS(NOW()) - TO_DAYS( tanggallahir ) ) , '%Y' ) +0)>=13 and (DATE_FORMAT( FROM_DAYS( TO_DAYS(NOW()) - TO_DAYS( tanggallahir ) ) , '%Y' ) +0)<=15  and id_cluster=c.id ) as smp,
 (select count(id) from tweb_penduduk where (DATE_FORMAT( FROM_DAYS( TO_DAYS(NOW()) - TO_DAYS( tanggallahir ) ) , '%Y' ) +0)>=16 and (DATE_FORMAT( FROM_DAYS( TO_DAYS(NOW()) - TO_DAYS( tanggallahir ) ) , '%Y' ) +0)<=18  and id_cluster=c.id ) as sma,
 (select count(id) from tweb_penduduk where (DATE_FORMAT( FROM_DAYS( TO_DAYS(NOW()) - TO_DAYS( tanggallahir ) ) , '%Y' ) +0)>60 and id_cluster=c.id ) as lansia,
-(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id) as cacat,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='1') as cacat_fisik,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='2') as cacat_netra,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='3') as cacat_rungu,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='4') as cacat_mental,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='5') as cacat_fisik_mental,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='6') as cacat_lainnya,
+(select count(id) from tweb_penduduk where cacat_id is not null and cacat_id <>'0'  and id_cluster=c.id and cacat_id='7') as tidak_cacat,
 (select count(id) from tweb_penduduk where sakit_menahun_id is not null and sakit_menahun_id <>'0' and id_cluster=c.id and sex='1') as sakit_L,
 (select count(id) from tweb_penduduk where sakit_menahun_id is not null and sakit_menahun_id <>'0' and id_cluster=c.id and sex='2') as sakit_P,
 (select count(id) from tweb_penduduk where hamil='1' and id_cluster=c.id) as hamil

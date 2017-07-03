@@ -6,6 +6,7 @@
     parent::__construct();
 
     $this->cek_engine_db();
+    $this->load->dbforge();
 
   }
 
@@ -19,6 +20,31 @@
       }
 
 		$this->db->db_debug = $db_debug; //restore setting
+  }
+
+  function reset_setting_aplikasi() {
+    $this->db->truncate('setting_aplikasi');
+    $query = "
+      INSERT INTO setting_aplikasi (`id`, `key`, `value`, `keterangan`, `jenis`,`kategori`) VALUES
+      (1, 'sebutan_kabupaten','kabupaten','Pengganti sebutan wilayah kabupaten','',''),
+      (2, 'sebutan_kabupaten_singkat','kab.','Pengganti sebutan singkatan wilayah kabupaten','',''),
+      (3, 'sebutan_kecamatan','kecamatan','Pengganti sebutan wilayah kecamatan','',''),
+      (4, 'sebutan_kecamatan_singkat','kec.','Pengganti sebutan singkatan wilayah kecamatan','',''),
+      (5, 'sebutan_desa','desa','Pengganti sebutan wilayah desa','',''),
+      (6, 'sebutan_dusun','dusun','Pengganti sebutan wilayah dusun','',''),
+      (7, 'sebutan_camat','camat','Pengganti sebutan jabatan camat','',''),
+      (8, 'website_title','Website Resmi','Judul tab browser modul web','','web'),
+      (9, 'login_title','OpenSID', 'Judul tab browser halaman login modul administrasi','',''),
+      (10, 'admin_title','Sistem Informasi Desa','Judul tab browser modul administrasi','',''),
+      (11, 'web_theme', 'default','Tema penampilan modul web','','web'),
+      (12, 'offline_mode',FALSE,'Apakah modul web akan ditampilkan atau tidak','boolean',''),
+      (13, 'enable_track',TRUE,'Apakah akan mengirimkan data statistik ke tracker','boolean',''),
+      (14, 'dev_tracker','','Host untuk tracker pada development','','development'),
+      (15, 'nomor_terakhir_semua_surat', FALSE,'Gunakan nomor surat terakhir untuk seluruh surat tidak per jenis surat','boolean',''),
+      (16, 'google_key','','Google API Key untuk Google Maps','','web'),
+      (17, 'libreoffice_path','','Path tempat instal libreoffice di server SID','','')
+    ";
+    $this->db->query($query);
   }
 
   function migrasi_db_cri() {
@@ -43,6 +69,166 @@
     $this->migrasi_112_ke_113();
     $this->migrasi_113_ke_114();
     $this->migrasi_114_ke_115();
+    $this->migrasi_115_ke_116();
+    $this->migrasi_116_ke_117();
+    $this->migrasi_117_ke_20();
+    $this->migrasi_20_ke_21();
+  }
+
+  function migrasi_20_ke_21(){
+    if (!$this->db->table_exists('widget') ) {
+      $query = "
+        CREATE TABLE `widget` (
+          `id` int NOT NULL AUTO_INCREMENT,
+          `isi` text,
+          `enabled` int(2),
+          `judul` varchar(100),
+          `jenis_widget` tinyint(2) NOT NULL DEFAULT 3,
+          `urut` int(5),
+          PRIMARY KEY  (`id`)
+        );
+      ";
+      $this->db->query($query);
+      // Pindahkan data widget dari tabel artikel ke tabel widget
+      $widgets = $this->db->select('isi, enabled, judul, jenis_widget, urut')->where('id_kategori', 1003)->get('artikel')->result_array();
+      foreach($widgets as $widget) {
+        $this->db->insert('widget', $widget);
+      }
+      $this->db->where('id_kategori',1003)->delete('artikel');
+      // Hapus kolom widget dari tabel artikel
+      $kolom_untuk_dihapus = array("urut", "jenis_widget");
+      foreach ($kolom_untuk_dihapus as $kolom){
+        $this->dbforge->drop_column('artikel', $kolom);
+      }
+    }
+    // Tambah tautan ke form administrasi widget
+    if (!$this->db->field_exists('form_admin', 'widget')) {
+      $fields = array(
+        'form_admin' => array(
+          'type' => 'VARCHAR',
+          'constraint' => 100
+        )
+      );
+      $this->dbforge->add_column('widget', $fields);
+      $this->db->where('isi','layanan_mandiri.php')->update('widget',array('form_admin'=>'mandiri'));
+      $this->db->where('isi','aparatur_desa.php')->update('widget',array('form_admin'=>'pengurus'));
+      $this->db->where('isi','agenda.php')->update('widget',array('form_admin'=>'web/index/1000'));
+      $this->db->where('isi','galeri.php')->update('widget',array('form_admin'=>'gallery'));
+      $this->db->where('isi','komentar.php')->update('widget',array('form_admin'=>'komentar'));
+      $this->db->where('isi','media_sosial.php')->update('widget',array('form_admin'=>'sosmed'));
+      $this->db->where('isi','peta_lokasi_kantor.php')->update('widget',array('form_admin'=>'hom_desa'));
+    }
+    // Tambah kolom setting widget
+    if (!$this->db->field_exists('setting', 'widget')) {
+      $fields = array(
+        'setting' => array(
+          'type' => 'text'
+        )
+      );
+      $this->dbforge->add_column('widget', $fields);
+    }
+    // Tambah widget sinergitas_program
+    $widget = $this->db->select('id')->where('isi','sinergitas_program.php')->get('widget')->row();
+    if (!$widget->id) {
+      $widget_baru = array('judul'=>'Sinergitas Program','isi'=>'sinergitas_program.php','enabled'=>1,'urut'=>1,'jenis_widget'=>1,'form_admin'=>'web_widget/admin/sinergitas_program');
+      $this->db->insert('widget',$widget_baru);
+    }
+  }
+
+  function migrasi_117_ke_20(){
+    if (!$this->db->table_exists('setting_aplikasi') ) {
+      $query = "
+        CREATE TABLE `setting_aplikasi` (
+          `id` int NOT NULL AUTO_INCREMENT,
+          `key` varchar(50),
+          `value` varchar(200),
+          `keterangan` varchar(200),
+          `jenis` varchar(30),
+          `kategori` varchar(30),
+          PRIMARY KEY  (`id`)
+        );
+      ";
+      $this->db->query($query);
+
+      $this->reset_setting_aplikasi();
+    }
+    // Update untuk tambahan offline mode 2, sesudah masuk pra-rilis (ada yang sudah migrasi)
+    $this->db->where('id',12)->update('setting_aplikasi',array('value'=>'0','jenis'=>''));
+    // Update media_sosial
+    $this->db->where('id',3)->update('media_sosial',array('nama'=>'Google Plus'));
+    $this->db->where('id',4)->update('media_sosial',array('nama'=>'YouTube'));
+    // Tambah widget aparatur_desa
+    $widget = $this->db->select('id')->where(array('isi'=>'aparatur_desa.php', 'id_kategori'=>1003))->get('artikel')->row();
+    if (!$widget->id) {
+      $aparatur_desa = array('judul'=>'Aparatur Desa','isi'=>'aparatur_desa.php','enabled'=>1,'id_kategori'=>1003,'urut'=>1,'jenis_widget'=>1);
+      $this->db->insert('artikel',$aparatur_desa);
+    }
+    // Tambah foto aparatur desa
+    if (!$this->db->field_exists('foto', 'tweb_desa_pamong')) {
+      $fields = array(
+        'foto' => array(
+          'type' => 'VARCHAR',
+          'constraint' => 100
+        )
+      );
+      $this->dbforge->add_column('tweb_desa_pamong', $fields);
+    }
+  }
+
+  function migrasi_116_ke_117(){
+    // Tambah kolom log_penduduk
+    if (!$this->db->field_exists('no_kk', 'log_penduduk')) {
+      $query = "ALTER TABLE log_penduduk ADD no_kk decimal(16,0)";
+      $this->db->query($query);
+    }
+    if (!$this->db->field_exists('nama_kk', 'log_penduduk')) {
+      $query = "ALTER TABLE log_penduduk ADD nama_kk varchar(100)";
+      $this->db->query($query);
+    }
+    // Hapus surat_ubah_sesuaikan
+    $this->db->where('url_surat', 'surat_ubah_sesuaikan')->delete('tweb_surat_format');
+    // Tambah kolom log_surat untuk surat non-warga
+    if (!$this->db->field_exists('nik_non_warga', 'log_surat')) {
+      $query = "ALTER TABLE log_surat ADD nik_non_warga decimal(16,0)";
+      $this->db->query($query);
+    }
+    if (!$this->db->field_exists('nama_non_warga', 'log_surat')) {
+      $query = "ALTER TABLE log_surat ADD nama_non_warga varchar(100)";
+      $this->db->query($query);
+    }
+    $query = "ALTER TABLE log_surat MODIFY id_pend int(11) DEFAULT NULL";
+    $this->db->query($query);
+    // Tambah contoh surat non-warga
+    $query = "
+      INSERT INTO tweb_surat_format(nama, url_surat, kode_surat, jenis) VALUES
+      ('Domisili Usaha Non-Warga', 'surat_domisili_usaha_non_warga', 'S-37', 1)
+      ON DUPLICATE KEY UPDATE
+        nama = VALUES(nama),
+        url_surat = VALUES(url_surat),
+        kode_surat = VALUES(kode_surat),
+        jenis = VALUES(jenis);
+    ";
+    $this->db->query($query);
+  }
+
+  function migrasi_115_ke_116(){
+    // Ubah surat N-1 menjadi surat gabungan N-1 s/d N-7
+    $this->db->where('url_surat','surat_ket_nikah')->update('tweb_surat_format',array('nama'=>'Keterangan Untuk Nikah (N-1 s/d N-7)'));
+    // Hapus surat N-2 s/d N-7 yang sudah digabungkan ke surat_ket_nikah
+    $this->db->where('url_surat','surat_ket_asalusul')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_persetujuan_mempelai')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_ket_orangtua')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_izin_orangtua')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_ket_kematian_suami_istri')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_kehendak_nikah')->delete('tweb_surat_format');
+    $this->db->where('url_surat','surat_ket_wali')->delete('tweb_surat_format');
+    // Tambah kolom untuk penandatangan surat
+    if (!$this->db->field_exists('pamong_ttd', 'tweb_desa_pamong')) {
+      $query = "ALTER TABLE tweb_desa_pamong ADD pamong_ttd tinyint(1)";
+      $this->db->query($query);
+    }
+    // Hapus surat_pindah_antar_kab_prov
+    $this->db->where('url_surat','surat_pindah_antar_kab_prov')->delete('tweb_surat_format');
   }
 
   function migrasi_114_ke_115(){
@@ -937,6 +1123,8 @@
       "artikel", //remove everything except widgets 1003
       "data_surat", // view
       "media_sosial", //?
+      "setting_modul",
+      "setting_aplikasi",
       "tweb_cacat",
       "tweb_cara_kb",
       "tweb_golongan_darah",

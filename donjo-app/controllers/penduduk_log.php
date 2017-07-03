@@ -102,7 +102,7 @@ class penduduk_log extends CI_Controller{
 		$data['list_dusun'] = $this->penduduk_model->list_dusun();
 
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$nav['act']= 2;
 		$this->load->view('header', $header);
 		$this->load->view('sid/nav',$nav);
@@ -167,7 +167,8 @@ class penduduk_log extends CI_Controller{
 	}
 
 	function edit_status_dasar($p=1,$o=0,$id=0){
-	$data['nik']          = $this->penduduk_model->get_penduduk($id);
+		$data['nik'] = $this->penduduk_model->get_penduduk($id);
+		$data['log_status_dasar'] = $this->penduduk_model->get_log_status_dasar($id);
 		$data['form_action'] = site_url("penduduk_log/update_status_dasar/$p/$o/$id");
 		$this->load->view('sid/kependudukan/ajax_edit_status_dasar',$data);
 	}

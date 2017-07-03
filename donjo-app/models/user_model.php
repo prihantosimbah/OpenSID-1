@@ -2,6 +2,8 @@
 
 class User_Model extends CI_Model{
 
+	const GROUP_REDAKSI = 3;
+
 	function __construct(){
 		parent::__construct();
 		$this->load->model('laporan_bulanan_model');
@@ -16,13 +18,21 @@ class User_Model extends CI_Model{
 		$row=$query->row();
 
 		if($password==$row->password){
-			$_SESSION['siteman']    = 1;
-			$_SESSION['sesi']     = $row->session;
-			$_SESSION['user']     = $row->id;
-			$_SESSION['grup']     = $row->id_grup;
-			$_SESSION['per_page'] = 10;
-		}
-		else{
+			// Jika offline_mode dalam level yang menyembunyikan website,
+			// redaksi tidak diijinkan login
+			if (($row->id_grup == self::GROUP_REDAKSI) &&
+				($this->setting->offline_mode >= 2)) {
+
+				$_SESSION['siteman']=-2;
+
+			} else {
+				$_SESSION['siteman']    = 1;
+				$_SESSION['sesi']     = $row->session;
+				$_SESSION['user']     = $row->id;
+				$_SESSION['grup']     = $row->id_grup;
+				$_SESSION['per_page'] = 10;
+			}
+		} else{
 			$_SESSION['siteman']=-1;
 		}
 	}
@@ -217,7 +227,7 @@ class User_Model extends CI_Model{
 		if ($data['password']=='radiisi'){
 		// apabila password tidak diganti
 			unset($data['password']);
-		} elseif ($id == 1 AND strtolower(config_item('demo')) == "y") {
+		} elseif ($id == 1 AND config_item('demo')) {
 	  // Jangan edit password admin apabila di situs demo
 			unset($data['username']);
 			unset($data['password']);
@@ -231,6 +241,9 @@ class User_Model extends CI_Model{
 	}
 
 	function delete($id=''){
+		// Jangan hapus admin
+		if ($id == 1) return;
+
 		$sql  = "DELETE FROM user WHERE id=?";
 		$outp = $this->db->query($sql,array($id));
 
@@ -243,6 +256,9 @@ class User_Model extends CI_Model{
 
 		if(count($id_cb)){
 			foreach($id_cb as $id){
+				// Jangan hapus admin
+				if ($id == 1) continue;
+
 				$sql  = "DELETE FROM user WHERE id=?";
 				$outp = $this->db->query($sql,array($id));
 			}
@@ -288,7 +304,7 @@ class User_Model extends CI_Model{
 		$pass_baru 		= $this->input->post('pass_baru');
 		$pass_baru1 	= $this->input->post('pass_baru1');
 
-		if($id == 1 AND strtolower(config_item('demo')) == "y"){
+		if($id == 1 AND config_item('demo')){
 		  // Jangan edit password admin apabila di situs demo
 			unset($data['password']);
 		} else {

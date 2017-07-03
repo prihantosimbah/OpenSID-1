@@ -210,7 +210,7 @@
 				'<td style="padding-left:2px"><font size="2.5" style="bold"><?php echo $data['nama']?></font> - <?php echo ucwords(strtolower($data['sex']))?>' +
 				'<p><?php echo $data['umur']?> Tahun (<?php echo $data['agama']?>)</p>'+
 				'<p><?php echo $data['alamat']?></p>'+
-				'<p><a href="<?php echo site_url("penduduk/detail/1/0/$data[id]")?>" target="ajax-modalx" rel="content" header="Detail Data <?php echo $data['nama']?>" >Data Detail</a></p></td>'+
+				'<p><a href="<?php echo site_url("penduduk/detail/1/0/$data[id]")?>" target="ajax-modalx" rel="content" header="Rincian Data <?php echo $data['nama']?>" >Data Rincian</a></p></td>'+
 				'</tr></table>';
 			infoWindow.setContent(content);
 			infoWindow.open(map, marker_<?php echo $data['id']?>);
@@ -254,7 +254,7 @@
 			<input type="checkbox" name="layer_keluarga" value="1" onchange="handle_kel(this);" <?php if($layer_keluarga==1){echo "checked";}?>> Keluarga
 		</td></tr>
 		<tr><td>
-			<input type="checkbox" name="layer_desa" value="1"onchange="handle_desa(this);" <?php if($layer_desa==1){echo "checked";}?>> <?php echo ucwords(config_item('sebutan_desa'))?>
+			<input type="checkbox" name="layer_desa" value="1"onchange="handle_desa(this);" <?php if($layer_desa==1){echo "checked";}?>> <?php echo ucwords($this->setting->sebutan_desa)?>
 		</td></tr>
 		<tr><td>
 			<input type="checkbox" name="layer_wilayah" value="1"onchange="handle_wil(this);" <?php if($layer_wilayah==1){echo "checked";}?>> Wilayah Administratif
@@ -316,7 +316,7 @@ function handle_point(cb) {
 </select>
 
 <select name="dusun" onchange="formAction('mainform','<?php echo site_url('gis/dusun')?>')">
-	<option value=""><?php echo ucwords(config_item('sebutan_dusun'))?></option>
+	<option value=""><?php echo ucwords($this->setting->sebutan_dusun)?></option>
 	<?php foreach($list_dusun AS $data){?>
 	<option <?php if($dusun==$data['dusun']) :?>selected<?php endif?> value="<?php echo $data['dusun']?>"><?php echo $data['dusun']?></option>
 	<?php }?>
@@ -348,10 +348,10 @@ function handle_point(cb) {
 </select>
 
 <input name="cari" id="cari" type="text" class="inputbox2 help tipped" size="20" value="<?php echo $cari?>" title="Search.."/>
-<button type="button" onclick="$('#'+'mainform').attr('action','<?php echo site_url('gis/search')?>');$('#'+'mainform').submit();" class="uibutton tipsy south"  title="Cari Data"><span class="ui-icon ui-icon-search">&nbsp;</span>Search</button>
+<button type="button" onclick="$('#'+'mainform').attr('action','<?php echo site_url('gis/search')?>');$('#'+'mainform').submit();" class="uibutton tipsy south"  title="Cari Data"><span class="fa fa-search">&nbsp;</span>Cari</button>
 <button href="<?php echo site_url("gis/ajax_adv_search")?>"  target="ajax-modalx" rel="window" header="Pencarian Spesifik"  class="uibutton tipsy south"  title="Pencarian Spesifik"><span class="ui-icon ui-icon-search">&nbsp;</span>Pencarian Spesifik</button>
 
-<a href="<?php echo site_url("gis/clear")?>"  class="uibutton tipsy south"  title="Clear Pencarian" style=""><span class="ui-icon ui-icon-search">&nbsp;</span>Clear</a>
+<a href="<?php echo site_url("gis/clear")?>"  class="uibutton tipsy south"  title="Clear Pencarian" style=""><span class="fa fa-refresh">&nbsp;</span>Bersihkan</a>
 		</form>
 	</div>
 </div>

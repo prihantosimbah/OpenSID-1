@@ -1,8 +1,16 @@
 <?php
 
-function AmbilFoto($foto){
-  $file_foto = base_url() . LOKASI_USER_PICT . "/kecil_" . $foto;
+function AmbilFoto($foto, $ukuran="kecil_"){
+  $ukuran = ($ukuran == "kecil_") ? "kecil_" : "";
+  $file_foto = base_url() . LOKASI_USER_PICT . $ukuran . $foto;
   return $file_foto;
+}
+
+function UploadGambarWidget($nama_file, $lokasi_file, $old_gambar){
+  $dir_upload = LOKASI_GAMBAR_WIDGET;
+  if($old_gambar) unlink($dir_upload . $old_gambar);
+  $file_upload = $dir_upload . $nama_file;
+  move_uploaded_file($lokasi_file, $file_upload);
 }
 
 function UploadFoto($fupload_name,$old_foto,$tipe_file=""){

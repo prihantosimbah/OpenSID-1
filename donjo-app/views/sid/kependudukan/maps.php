@@ -1,5 +1,4 @@
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery-1.5.2.min.js"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo config_item('google_key'); ?>"></script>
 <script>
 (function() {
         var mapOptions = {
@@ -61,7 +60,7 @@
     <input type="hidden" name="map_tipe" id="map_tipe" />
 <div class="buttonpane" style="text-align: right; width:420px;position:absolute;bottom:0px;">
 <div class="uibutton-group">
-	<button class="uibutton confirm" type="submit">Simpan</button>
+	<button class="uibutton confirm" type="submit"><span class="fa fa-save"></span> Simpan</button>
 </div>
 </div>
 </form>

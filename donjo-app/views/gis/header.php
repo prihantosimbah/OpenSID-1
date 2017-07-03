@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php
-	echo config_item('admin_title')
-		. ' ' . ucwords(config_item('sebutan_desa'))
+	echo $this->setting->admin_title
+		. ' ' . ucwords($this->setting->sebutan_desa)
 		. (($desa['nama_desa']) ? ' ' . unpenetration($desa['nama_desa']) : '')
 		. get_dynamic_title_page_from_path();
 ?></title>
@@ -35,7 +35,7 @@
 		<script type="text/javascript" src="<?php echo base_url()?>assets/js/donjoscript/donjo.ui.dialog.js"></script>
 		<script type="text/javascript" src="<?php echo base_url()?>assets/js/donjoscript/donjo.ui.attribut.js"></script>
 		<script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.validate.min.js"></script>
-		<script type="text/javascript" src="<?php echo base_url()?>assets/js/validasi.js"></script><script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=4&key=<?php echo config_item('google_key'); ?>"></script>
+		<script type="text/javascript" src="<?php echo base_url()?>assets/js/validasi.js"></script><script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=4&key=<?php echo $this->setting->google_key; ?>"></script>
 <!---->
 <!--[if lte IE 6]>
 <style type="text/css">
@@ -79,7 +79,7 @@ img, div,span,a,button { behavior: url(assets/js/iepngfix.htc) }
 <div class="ui-layout-north" id="header">
 	<div id="sid-logo"><a href="<?php echo site_url()?>first" target="_blank"><img src="<?php echo LogoDesa($desa['logo']);?>" alt=""/></a></div>
 	<div id="sid-judul">SID Sistem Informasi Desa</div>
-	<div id="sid-info"><?php echo ucwords(config_item('sebutan_desa')." ".$desa['nama_desa'].", ".config_item('sebutan_kecamatan')." ".unpenetration($desa['nama_kecamatan']).", ".config_item('sebutan_kabupaten')." ".unpenetration($desa['nama_kabupaten']))?></div>
+	<div id="sid-info"><?php echo ucwords($this->setting->sebutan_desa." ".$desa['nama_desa'].", ".$this->setting->sebutan_kecamatan." ".unpenetration($desa['nama_kecamatan']).", ".$this->setting->sebutan_kabupaten." ".unpenetration($desa['nama_kabupaten']))?></div>
 	<div id="userbox" class="wrapper-dropdown-3" tabindex="1">
   <div class="avatar">
 		<?php if($foto){?>
@@ -95,22 +95,22 @@ img, div,span,a,button { behavior: url(assets/js/iepngfix.htc) }
 
 <ul class="dropdown" tabindex="1">
 <?php  if($_SESSION['grup']==1 OR $_SESSION['grup']==2){?>
-	<li><a href="<?php echo site_url()?>modul/clear"><i class="icon-gear icon-large"></i>Pengaturan</a></li>
-	<li><a href="<?php echo site_url()?>hom_desa"><i class="icon-home icon-large"></i>SID Home</a></li>
-	<li><a href="<?php echo site_url()?>sid_core"><i class="icon-group icon-large"></i>Penduduk</a></li>
-	<li><a href="<?php echo site_url()?>statistik"><i class="icon-bar-chart icon-large"></i>Statistik</a></li>
-	<li><a href="<?php echo site_url()?>surat"><i class="icon-print icon-large"></i>Cetak Surat</a></li>
-	<li><a href="<?php echo site_url()?>analisis"><i class="icon-dashboard icon-large"></i>Analisis</a></li>
+	<li><a href="<?php echo site_url()?>modul/clear"><i class="icon-gear"></i>Pengaturan</a></li>
+	<li><a href="<?php echo site_url()?>hom_desa"><i class="icon-home"></i>SID Home</a></li>
+	<li><a href="<?php echo site_url()?>sid_core"><i class="icon-group"></i>Penduduk</a></li>
+	<li><a href="<?php echo site_url()?>statistik"><i class="icon-bar-chart"></i>Statistik</a></li>
+	<li><a href="<?php echo site_url()?>surat"><i class="icon-print"></i>Cetak Surat</a></li>
+	<li><a href="<?php echo site_url()?>analisis"><i class="icon-dashboard"></i>Analisis</a></li>
 <?php  }?>
 <?php  if($_SESSION['grup']==1 OR $_SESSION['grup']==2){?>
 	<?php  if($_SESSION['grup']==1){?>
-		<li><a href="<?php echo site_url()?>man_user/clear"><i class="icon-user icon-large"></i>Pengguna</a></li>
-		<li><a href="<?php echo site_url()?>database"><i class="icon-hdd icon-large"></i>Database</a></li>
+		<li><a href="<?php echo site_url()?>man_user/clear"><i class="icon-user"></i>Pengguna</a></li>
+		<li><a href="<?php echo site_url()?>database"><i class="icon-hdd"></i>Database</a></li>
 	<?php  }?>
-	<li><a href="<?php echo site_url()?>sms"><i class="icon-envelope-alt icon-large"></i>SMS</a></li>
-	<li><a href="<?php echo site_url()?>web"><i class="icon-cloud icon-large"></i>Admin Web</a></li>
+	<li><a href="<?php echo site_url()?>sms"><i class="icon-envelope-alt"></i>SMS</a></li>
+	<li><a href="<?php echo site_url()?>web"><i class="icon-cloud"></i>Admin Web</a></li>
 <?php  }?>
-<li><a href="<?php echo site_url()?>siteman"><i class="icon-off icon-large"></i>Log Out</a></li>
+<li><a href="<?php echo site_url()?>siteman"><i class="icon-off"></i>Log Out</a></li>
 </ul>
 
     </div>

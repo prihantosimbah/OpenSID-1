@@ -5,11 +5,28 @@
 <div class="content-header">
 </div>
 <div id="contentpane">
-<div class="ui-layout-north panel"><h3>Form Staf Pemerintah <?php echo ucwords(config_item('sebutan_desa'))?></h3>
+<div class="ui-layout-north panel"><h3>Form Staf Pemerintah <?php echo ucwords($this->setting->sebutan_desa)?></h3>
 </div>
     <form id="validasi" action="<?php echo $form_action?>" method="POST" enctype="multipart/form-data">
     <div class="ui-layout-center" id="maincontent" style="padding: 5px;">
         <table class="form">
+            <tr>
+              <th class="top">Foto</th>
+              <td>
+                <div class="userbox-avatar">
+                  <?php if($pamong['foto']){?>
+                      <img src="<?php echo AmbilFoto($pamong['foto'])?>" alt=""/>
+                  <?php }else{?>
+                      <img src="<?php echo base_url()?>assets/files/user_pict/kuser.png" alt=""/>
+                  <?php }?>
+                </div>
+              </td>
+              <input type="hidden" name="old_foto" value="<?php echo $pamong['foto']?>">
+            </tr>
+            <tr>
+              <th>Ganti Foto</th>
+              <td><input type="file" name="foto" /> <span style="color: #aaa;">(Kosongkan jika tidak ingin mengubah foto)</span></td>
+            </tr>
             <tr>
                 <th>Nama</th>
                 <td><input name="pamong_nama" type="text" class="inputbox required" size="40" value="<?php echo unpenetration($pamong['pamong_nama'])?>"/></td>
@@ -45,8 +62,8 @@
         </div>
         <div class="right">
             <div class="uibutton-group">
-                <button class="uibutton" type="reset">Clear</button>
-                <button class="uibutton confirm" type="submit" >Simpan</button>
+                <button class="uibutton" type="reset"><span class="fa fa-refresh"></span> Bersihkan</button>
+                <button class="uibutton confirm" type="submit" ><span class="fa fa-save"></span> Simpan</button>
             </div>
         </div>
     </div> </form>

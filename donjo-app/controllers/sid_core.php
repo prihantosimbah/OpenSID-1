@@ -43,7 +43,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah',$data);
@@ -90,7 +90,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah_form',$data);
@@ -137,7 +137,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah_rw',$data);
@@ -197,7 +197,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah_form_rw',$data);
@@ -237,7 +237,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah_rt',$data);
@@ -317,7 +317,7 @@ function __construct(){
 
 		$nav['act']= 0;
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 		$this->load->view('sid/nav',$nav);
 		$this->load->view('sid/wilayah/wilayah_form_rt',$data);
@@ -351,17 +351,6 @@ function __construct(){
 		$rw=$temp['rw'];
 		$this->wilayah_model->delete_all_rt();
 		redirect("sid_core");
-	}
-
-	function cetakx(){
-
-		$data['input'] = $_POST;
-		$data['tanggal_sekarang'] = tgl_indo(date("Y m d"));
-		$data['total'] = $this->wilayah_model->total();
-	        $this->surat_keluar_model->log_surat($f,$id,$g,$u);
-
-		$this->load->view('surat/print_surat_ket_pengantar',$data);
-
 	}
 
 	function ajax_wil_maps($id=0){

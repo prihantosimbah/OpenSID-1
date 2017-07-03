@@ -136,7 +136,7 @@ class Penduduk extends CI_Controller{
 		$data['list_dusun'] = $this->penduduk_model->list_dusun();
 
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$nav['act']= 2;
 		$this->load->view('header', $header);
 
@@ -205,7 +205,7 @@ class Penduduk extends CI_Controller{
 		}
 
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$data['dusun'] = $this->penduduk_model->list_dusun();
 		$data['rw']    = $this->penduduk_model->list_rw($data['dus_sel']);
 		$data['rt']    = $this->penduduk_model->list_rt($data['dus_sel'],$data['rw_sel']);
@@ -219,7 +219,7 @@ class Penduduk extends CI_Controller{
 		$data['golongan_darah'] = $this->penduduk_model->list_golongan_darah();
 		$data['cacat'] = $this->penduduk_model->list_cacat();
 		$data['cara_kb'] = $this->penduduk_model->list_cara_kb($data['penduduk']['id_sex']);
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header', $header);
 		$nav['act']= 2;
 		unset($_SESSION['dari_internal']);
@@ -235,7 +235,7 @@ class Penduduk extends CI_Controller{
 		$data['list_dokumen'] = $this->penduduk_model->list_dokumen($id);
 		$data['penduduk'] = $this->penduduk_model->get_penduduk($id);
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header', $header);
 		$nav['act']= 2;
 		$this->load->view('sid/nav',$nav);
@@ -248,7 +248,7 @@ class Penduduk extends CI_Controller{
 		$data['penduduk'] = $this->penduduk_model->get_penduduk($id);
 		$header = $this->header_model->get_data();
 
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header', $header);
 		$nav['act']= 2;
 		$this->load->view('sid/nav',$nav);
@@ -286,7 +286,8 @@ class Penduduk extends CI_Controller{
 
   function cetak_biodata($id=''){
 
-		$data['desa'] = $this->header_model->get_data();
+		$header = $this->header_model->get_data();
+		$data['desa'] = $header['desa'];
 		$data['penduduk'] = $this->penduduk_model->get_penduduk($id);
 		$this->load->view('sid/kependudukan/cetak_biodata',$data);
 	}
@@ -584,7 +585,7 @@ class Penduduk extends CI_Controller{
 
 
 	function edit_status_dasar($p=1,$o=0,$id=0){
-	$data['nik']          = $this->penduduk_model->get_penduduk($id);
+		$data['nik'] = $this->penduduk_model->get_penduduk($id);
 		$data['form_action'] = site_url("penduduk/update_status_dasar/$p/$o/$id");
 		$this->load->view('sid/kependudukan/ajax_edit_status_dasar',$data);
 	}
@@ -676,6 +677,7 @@ class Penduduk extends CI_Controller{
 
 	function lap_statistik($id_cluster=0,$tipe=0,$nomor=0){
 		unset($_SESSION['sex']);
+		unset($_SESSION['cacat']);
 		unset($_SESSION['cacatx']);
 		unset($_SESSION['menahun']);
 		unset($_SESSION['menahunx']);
@@ -749,12 +751,15 @@ class Penduduk extends CI_Controller{
 				$_SESSION['rt']=$cluster['rt'];
 				$pre="BERUMUR >60";
 				break;
-			case 9:
-				$_SESSION['cacatx'] = '7';
+			case 91: case 92: case 93: case 94:
+			case 95: case 96: case 97:
+				$kode_cacat = $tipe - 90;
+				$_SESSION['cacat'] = $kode_cacat;
 				$_SESSION['dusun']=$cluster['dusun'];
 				$_SESSION['rw']=$cluster['rw'];
 				$_SESSION['rt']=$cluster['rt'];
-				$pre="CACAT ";
+				$stat = $this->penduduk_model->get_judul_statistik(9,$kode_cacat,NULL);
+				$pre = $stat['nama'];
 				break;
 			case 10:
 				$_SESSION['menahunx'] = '14';

@@ -576,7 +576,7 @@
 	// apabila $is_no_kk == true maka $id adalah no_kk
 	function get_kepala_kk($id, $is_no_kk = false){
 		$kolom_id = ($is_no_kk) ? "no_kk" : "id";
-		$sql   = "SELECT nik,u.id,u.nama,tempatlahir,tanggallahir,(SELECT DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(`tanggallahir`)), '%Y')+0 FROM tweb_penduduk WHERE id = u.id) AS umur,a.nama as agama,d.nama as pendidikan,j.nama as pekerjaan, x.nama as sex,w.nama as status_kawin,h.nama as hubungan,f.nama as warganegara,warganegara_id,nama_ayah,nama_ibu,g.nama as golongan_darah ,c.rt as rt,c.rw as rw,c.dusun as dusun, (SELECT no_kk FROM tweb_keluarga WHERE $kolom_id = ?) AS no_kk, (SELECT alamat FROM tweb_keluarga WHERE $kolom_id = ?) AS alamat, (SELECT id FROM tweb_keluarga WHERE $kolom_id = ?) AS id_kk
+		$sql   = "SELECT nik,u.id,u.nama,u.status_kawin as status_kawin_id,tempatlahir,tanggallahir,(SELECT DATE_FORMAT(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(`tanggallahir`)), '%Y')+0 FROM tweb_penduduk WHERE id = u.id) AS umur,a.nama as agama,d.nama as pendidikan,j.nama as pekerjaan, x.nama as sex,w.nama as status_kawin,h.nama as hubungan,f.nama as warganegara,warganegara_id,nama_ayah,nama_ibu,g.nama as golongan_darah ,c.rt as rt,c.rw as rw,c.dusun as dusun, (SELECT no_kk FROM tweb_keluarga WHERE $kolom_id = ?) AS no_kk, (SELECT alamat FROM tweb_keluarga WHERE $kolom_id = ?) AS alamat, (SELECT id FROM tweb_keluarga WHERE $kolom_id = ?) AS id_kk
 			FROM tweb_penduduk u
 			LEFT JOIN tweb_penduduk_pekerjaan j ON u.pekerjaan_id = j.id
 			LEFT JOIN tweb_golongan_darah g ON u.golongan_darah_id = g.id
@@ -590,7 +590,7 @@
 			WHERE u.id = (SELECT nik_kepala FROM tweb_keluarga WHERE $kolom_id = ?) ";
 		$query = $this->db->query($sql,array($id,$id,$id,$id,$id));
 		$data = $query->row_array();
-		if ($data['dusun'] != '') $data['alamat_plus_dusun'] = trim($data['alamat'].' '.ucwords(config_item('sebutan_dusun')).' '.$data['dusun']);
+		if ($data['dusun'] != '') $data['alamat_plus_dusun'] = trim($data['alamat'].' '.ucwords($this->setting->sebutan_dusun).' '.$data['dusun']);
 		elseif ($data['alamat']) $data['alamat_plus_dusun'] = $data['alamat'];
 		$data['alamat_wilayah'] = $this->get_alamat_wilayah($data['id_kk']);
 		return $data;
@@ -772,7 +772,7 @@
 		if (!isset($data['rw'])) $data['rw'] = '';
 		if (!isset($data['dusun'])) $data['dusun'] = '';
 
-		$alamat_wilayah= trim("$data[alamat] RT $data[rt] / RW $data[rw] ".ikut_case($data['dusun'],config_item('sebutan_dusun'))." $data[dusun]");
+		$alamat_wilayah= trim("$data[alamat] RT $data[rt] / RW $data[rw] ".ikut_case($data['dusun'],$this->setting->sebutan_dusun)." $data[dusun]");
 		return $alamat_wilayah;
 	}
 

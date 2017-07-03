@@ -10,8 +10,8 @@
         <div class="uibutton-group">
 
 
-          <a class="uibutton tipsy south" title="Cetak" onclick="$('#'+'mainform').attr('target','_blank');formAction('mainform','<?php echo site_url('laporan/cetak')?>')"><span class="icon-print icon-large">&nbsp;</span>Cetak</a>
-          <a class="uibutton tipsy south" title="Excel" onclick="$('#'+'mainform').attr('target','_blank');formAction('mainform','<?php echo site_url('laporan/excel')?>')"><span class="icon-file-text icon-large">&nbsp;</span>Excel</a>
+          <a class="uibutton tipsy south" title="Cetak" onclick="$('#'+'mainform').attr('target','_blank');formAction('mainform','<?php echo site_url('laporan/cetak')?>')"><span class="fa fa-print">&nbsp;</span>Cetak</a>
+          <a class="uibutton tipsy south" title="Excel" onclick="$('#'+'mainform').attr('target','_blank');formAction('mainform','<?php echo site_url('laporan/excel')?>')"><span class="fa fa-file-text">&nbsp;</span>Excel</a>
         </div>
       </div>
     </div>
@@ -31,13 +31,13 @@
 			<table>
 				<tbody>
           <tr>
-  					<td><?php echo ucwords(config_item('sebutan_desa'))?>/Kelurahan</td>
+  					<td><?php echo ucwords($this->setting->sebutan_desa)?>/Kelurahan</td>
   					<td width="3%">:</td>
   					<td width="38.5%"><?php echo unpenetration($data['nama_desa'])?></h4></td>
   					<td></td>
   				</tr>
   				<tr>
-  					<td><?php echo ucwords(config_item('sebutan_kecamatan'))?></td>
+  					<td><?php echo ucwords($this->setting->sebutan_kecamatan)?></td>
   					<td width="3%">:</td>
   					<td width="38.5%"><?php echo unpenetration($data['nama_kecamatan'])?></td>
   					<td></td>
@@ -70,7 +70,7 @@
             <td>Diketahui</td>
             <td width="3%">:</td>
             <td><select name="pamong"  class="inputbox">
-              <option value="">Pilih Staf Pemerintah <?php echo ucwords(config_item('sebutan_desa'))?></option>
+              <option value="">Pilih Staf Pemerintah <?php echo ucwords($this->setting->sebutan_desa)?></option>
               <?php foreach($pamong AS $data){?>
                 <option value="<?php echo $data['pamong_nama']?>"><?php echo $data['pamong_nama']?>(<?php echo $data['jabatan']?>)</option>
               <?php }?>
@@ -102,7 +102,7 @@
       </div>
       <div class="right">
         <div class="uibutton-group">
-          <button class="uibutton confirm" type="submit" >Cetak</button>
+          <button class="uibutton confirm" type="submit" ><span class="fa fa-print"></span> Cetak</button>
         </div>
       </div>
     </div>

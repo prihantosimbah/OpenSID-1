@@ -32,7 +32,7 @@ class Pengurus extends CI_Controller{
 		$data['main'] = $this->pamong_model->list_data();
 		$data['keyword'] = $this->pamong_model->autocomplete();
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$nav['act']= 1;
 		$this->load->view('header',$header);
 
@@ -53,7 +53,7 @@ class Pengurus extends CI_Controller{
 		}
 
 		$header = $this->header_model->get_data();
-		$header['modul_ini'] = $this->modul_ini;
+
 		$this->load->view('header',$header);
 
 		$nav['act']= 1;
@@ -98,4 +98,13 @@ class Pengurus extends CI_Controller{
 		redirect('pengurus');
 	}
 
+	function ttd_on($id=''){
+		$this->pamong_model->ttd($id,1);
+		redirect('pengurus');
+	}
+
+	function ttd_off($id=''){
+		$this->pamong_model->ttd($id,0);
+		redirect('pengurus');
+	}
 }

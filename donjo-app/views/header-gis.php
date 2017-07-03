@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php
-	echo config_item('admin_title')
-		. ' ' . ucwords(config_item('sebutan_desa'))
+	echo $this->setting->admin_title
+		. ' ' . ucwords($this->setting->sebutan_desa)
 		. (($desa['nama_desa']) ? ' ' . unpenetration($desa['nama_desa']) : '')
 		. get_dynamic_title_page_from_path();
 ?></title>
@@ -37,14 +37,14 @@
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/donjoscript/donjo.ui.attribut.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/validasi.js"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo config_item('google_key'); ?>"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo $this->setting->google_key; ?>"></script>
 <script type="text/javascript" src="<?php echo base_url()?>assets/js/jscolor/jscolor.js"></script>
 </head>
 <body>
 <div class="ui-layout-north" id="header">
 <div id="sid-logo"><a href="<?php echo site_url()?>first" target="_blank"><img src="<?php echo LogoDesa($desa['logo']);?>" alt=""/></a></div>
 <div id="sid-judul">SID Sistem Informasi Desa</div>
-<div id="sid-info"><?php echo ucwords(config_item('sebutan_desa')." ".$desa['nama_desa'].", ".config_item('sebutan_kecamatan')." ".unpenetration($desa['nama_kecamatan']).", ".config_item('sebutan_kabupaten')." ".unpenetration($desa['nama_kabupaten']))?></div>
+<div id="sid-info"><?php echo ucwords($this->setting->sebutan_desa." ".$desa['nama_desa'].", ".$this->setting->sebutan_kecamatan." ".unpenetration($desa['nama_kecamatan']).", ".$this->setting->sebutan_kabupaten." ".unpenetration($desa['nama_kabupaten']))?></div>
 <div id="userbox" class="wrapper-dropdown-3" tabindex="1">
         <div class="avatar">
 		<?php if($foto){?>
@@ -66,7 +66,7 @@
 	<li><a href="<?php echo site_url()?>sid_core"><i class="icon-group icon-large"></i>Penduduk</a></li>
 	<li><a href="<?php echo site_url()?>statistik"><i class="icon-bar-chart icon-large"></i>Statistik</a></li>
 	<li><a href="<?php echo site_url()?>surat"><i class="icon-print icon-large"></i>Cetak Surat</a></li>
-	<li><a href="<?php echo site_url()?>analisis"><i class="icon-dashboard icon-large"></i>Analisis</a></li>
+	<li><a href="<?php echo site_url()?>analisis_master/clear"><i class="icon-dashboard icon-large"></i>Analisis</a></li>
 <?php  }?>
 <?php  if($_SESSION['grup']==1 OR $_SESSION['grup']==2){?>
 	<?php  if($_SESSION['grup']==1){?>
@@ -86,8 +86,8 @@
 <div class="ui-layout-center" id="wrapper">
 
 
-<!-- NOTIFICATION
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo config_item('google_key'); ?>"></script>--><?php  if($_SESSION['success']==1): ?>
+<!-- NOTIFICATION-->
+<?php  if($_SESSION['success']==1): ?>
 <script type="text/javascript">
 $('document').ready(function(){
 notification('success','Data Berhasil Disimpan')();
@@ -114,10 +114,16 @@ notification('error','Simpan data gagal, nama id sudah ada!')();
 <div class="module-panel">
 	<div class="contentm" style="overflow: hidden;">
 		<?php foreach ($modul AS $mod){?>
-		<a class="cpanel <?php if($modul_ini==$mod['id']){?>selected<?php }?>" href="<?php echo site_url()?><?php echo $mod['url']?>">
-			<img src="<?php echo base_url()?>assets/images/cpanel/<?php echo $mod['ikon']?>" alt=""/>
-			<span><?php echo $mod['modul']?></span>
-		</a>
+			<?php
+			if ($this->setting->offline_mode >= 2 &&
+				in_array($mod['url'], array('web', 'gis'))) {
+				continue;
+			}
+			?>
+			<a class="cpanel <?php if($modul_ini==$mod['id']){?>selected<?php }?>" href="<?php echo site_url()?><?php echo $mod['url']?>">
+				<img src="<?php echo base_url()?>assets/images/cpanel/<?php echo $mod['ikon']?>" alt=""/>
+				<span><?php echo $mod['modul']?></span>
+			</a>
 		<?php } ?>
 	</div>
 </div>
